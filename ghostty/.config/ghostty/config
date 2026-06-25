@@ -1,0 +1,7 @@
+background = ffffff
+foreground = 000000
+font-family = Monaspace Neon
+font-size = 15
+macos-option-as-alt = right
+cursor-style = block
+shell-integration-features = no-cursor
