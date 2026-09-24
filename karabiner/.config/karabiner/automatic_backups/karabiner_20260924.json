@@ -5,33 +5,6 @@
             "complex_modifications": {
                 "rules": [
                     {
-                        "description": "Hyper + O → Page Down, Hyper + U → Page Up",
-                        "manipulators": [
-                            {
-                                "from": {
-                                    "key_code": "o",
-                                    "modifiers": {
-                                        "mandatory": ["command", "control", "option", "shift"],
-                                        "optional": ["caps_lock"]
-                                    }
-                                },
-                                "to": [{ "key_code": "page_down" }],
-                                "type": "basic"
-                            },
-                            {
-                                "from": {
-                                    "key_code": "u",
-                                    "modifiers": {
-                                        "mandatory": ["command", "control", "option", "shift"],
-                                        "optional": ["caps_lock"]
-                                    }
-                                },
-                                "to": [{ "key_code": "page_up" }],
-                                "type": "basic"
-                            }
-                        ]
-                    },
-                    {
                         "description": "Hyper + <> toggles Caps Lock",
                         "manipulators": [
                             {
