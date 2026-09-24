@@ -3,9 +3,6 @@ clear # to remove "last time login..." line
 # Kiro CLI pre block. Keep at the top of this file.
 [[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.pre.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.pre.zsh"
 
-
-
-
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
 __conda_setup="$('/opt/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
@@ -23,7 +20,7 @@ unset __conda_setup
 
 export PATH="/Library/PostgreSQL/18/bin:$PATH"
 
-
+path=(~/.local/bin $path)
 
 # opencode
 export PATH=/Users/uni/.opencode/bin:$PATH
@@ -58,3 +55,4 @@ alias ex='exit'
 alias -g COPY='| pbcopy'
 # alias "git auto"='git add . && git commit -m "auto-commit" && git push'
 alias ts=trash
+alias -g sublime='open -a "Sublime Text"'
