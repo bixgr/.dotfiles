@@ -5,28 +5,22 @@
             "complex_modifications": {
                 "rules": [
                     {
-                        "description": "Hyper + O → Page Down, Hyper + U → Page Up",
+                        "description": "Hyper + <> toggles Caps Lock",
                         "manipulators": [
                             {
                                 "from": {
-                                    "key_code": "o",
+                                    "key_code": "grave_accent_and_tilde",
                                     "modifiers": {
-                                        "mandatory": ["command", "control", "option", "shift"],
-                                        "optional": ["caps_lock"]
+                                        "mandatory": ["left_command", "left_control", "left_option", "left_shift"],
+                                        "optional": ["any"]
                                     }
                                 },
-                                "to": [{ "key_code": "page_down" }],
-                                "type": "basic"
-                            },
-                            {
-                                "from": {
-                                    "key_code": "u",
-                                    "modifiers": {
-                                        "mandatory": ["command", "control", "option", "shift"],
-                                        "optional": ["caps_lock"]
+                                "to": [
+                                    {
+                                        "hold_down_milliseconds": 250,
+                                        "key_code": "caps_lock"
                                     }
-                                },
-                                "to": [{ "key_code": "page_up" }],
+                                ],
                                 "type": "basic"
                             }
                         ]
@@ -43,40 +37,6 @@
                                     {
                                         "key_code": "left_shift",
                                         "modifiers": ["left_command", "left_control", "left_option"]
-                                    }
-                                ],
-                                "type": "basic"
-                            }
-                        ]
-                    },
-                    {
-                        "description": "Hyper + 1 toggles rain sound",
-                        "manipulators": [
-                            {
-                                "from": {
-                                    "key_code": "1",
-                                    "modifiers": { "mandatory": ["left_command", "left_control", "left_option", "left_shift"] }
-                                },
-                                "to": [{ "shell_command": "$HOME/.local/bin/toggle-rain.sh" }],
-                                "type": "basic"
-                            }
-                        ]
-                    },
-                    {
-                        "description": "Hyper + <> toggles Caps Lock",
-                        "manipulators": [
-                            {
-                                "from": {
-                                    "key_code": "grave_accent_and_tilde",
-                                    "modifiers": {
-                                        "mandatory": ["left_command", "left_control", "left_option", "left_shift"],
-                                        "optional": ["any"]
-                                    }
-                                },
-                                "to": [
-                                    {
-                                        "hold_down_milliseconds": 250,
-                                        "key_code": "caps_lock"
                                     }
                                 ],
                                 "type": "basic"
