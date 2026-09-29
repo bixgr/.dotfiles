@@ -56,3 +56,10 @@ alias -g COPY='| pbcopy'
 # alias "git auto"='git add . && git commit -m "auto-commit" && git push'
 alias ts=trash
 alias -g sublime='open -a "Sublime Text"'
+
+# saving commands
+setopt interactivecomments
+HISTSIZE=100000
+SAVEHIST=100000
+setopt SHARE_HISTORY
+source <(fzf --zsh)
