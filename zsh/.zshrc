@@ -63,3 +63,9 @@ HISTSIZE=100000
 SAVEHIST=100000
 setopt SHARE_HISTORY
 source <(fzf --zsh)
+
+# doc pop-up
+# git clone https://github.com/Aloxaf/fzf-tab ~/.zsh/fzf-tabT
+autoload -Uz compinit && compinit -u
+# ^^^ must come before vvv
+source ~/.zsh/fzf-tab/fzf-tab.plugin.zsh
