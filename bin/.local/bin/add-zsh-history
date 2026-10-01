@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+# add-zsh-history.sh: seed a zsh history file with categorised commands
+set -euo pipefail
+
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") [-u USER] [-f HISTFILE] [COMMANDS_FILE]
+
+Reads commands from COMMANDS_FILE (default: ./cli-commands.txt, use - for
+stdin) and appends them to a zsh history file as "<command> #category".
+
+File format:
+  - fav               starts a category, applied to the lines below it
+  git log             becomes: git log #fav
+  pwd # a note        the comment is stripped: pwd #fav
+  # a note            full line comments and blank lines are skipped
+
+  -u USER      target another user's history (uses sudo). Default: you
+  -f HISTFILE  history file path. Default: <user's home>/.zsh_history
+  -h           show this help
+EOF
+}
+
+me="$(id -un)"
+target_user="$me"
+histfile=""
+
+while getopts ":u:f:h" opt; do
+  case $opt in
+    u) target_user=$OPTARG ;;
+    f) histfile=$OPTARG ;;
+    h) usage; exit 0 ;;
+    *) usage >&2; exit 1 ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+input=${1:-${CLI_COMMANDS_FILE:-$HOME/.dotfiles/cli-commands.txt}}
+[[ $input == - ]] && input=/dev/stdin
+[[ -r $input ]] || { echo "Can't read $input" >&2; exit 1; }
+
+# Resolve the target user's home dir (works on Linux and macOS)
+[[ $target_user =~ ^[A-Za-z0-9._-]+$ ]] || { echo "Invalid username: $target_user" >&2; exit 1; }
+home=$(eval echo "~$target_user")
+[[ $home != "~"* ]] || { echo "No such user: $target_user" >&2; exit 1; }
+histfile=${histfile:-$home/.zsh_history}
+
+# Run a command as the target user, so files end up owned by them
+run() {
+  if [[ $target_user == "$me" ]]; then "$@"; else sudo -u "$target_user" "$@"; fi
+}
+
+trim() {
+  local s=$1
+  s="${s#"${s%%[![:space:]]*}"}"
+  printf '%s' "${s%"${s##*[![:space:]]}"}"
+}
+
+# Collect existing entries (prefix ": <ts>:<dur>;" stripped) for dedup
+existing=$(mktemp)
+trap 'rm -f "$existing"' EXIT
+{ run cat "$histfile" 2>/dev/null || true; } | sed -E 's/^: [0-9]+:[0-9]+;//' > "$existing"
+
+header_re='^-[[:space:]]*(.+)$'
+category=""
+cmds=()
+
+while IFS= read -r raw || [[ -n $raw ]]; do
+  line=$(trim "$raw")
+  [[ -z $line ]] && continue
+
+  if [[ $line =~ $header_re ]]; then
+    category=$(trim "${BASH_REMATCH[1]}")
+    category=${category// /-}
+    continue
+  fi
+
+  # Strip comments: whole line "# ..." or trailing " # ..."
+  [[ $line == \#* ]] && continue
+  line=$(trim "${line%%[[:space:]]#*}")
+
+  [[ -n $category ]] && line="$line #$category"
+
+  grep -Fxq -- "$line" "$existing" && continue
+  cmds+=("$line")
+  printf '%s\n' "$line" >> "$existing"
+done < "$input"
+
+if (( ${#cmds[@]} )); then
+  # Consecutive timestamps keep the commands in file order
+  ts=$(( $(date +%s) - ${#cmds[@]} ))
+  for c in "${cmds[@]}"; do
+    printf ': %d:0;%s\n' "$((ts++))" "$c"
+  done | run sh -c 'umask 077; cat >> "$1"' sh "$histfile"
+  echo "Added ${#cmds[@]} command(s) to $histfile"
+else
+  echo "Nothing new to add to $histfile"
+fi
+
+# Without this option, zsh passes "#category" to the command as an argument
+if ! run grep -qiE '^[^#]*(setopt|set -o).*interactive_?comments' "$home/.zshrc" 2>/dev/null; then
+  echo
+  echo "Warning: add 'setopt interactive_comments' to $home/.zshrc,"
+  echo "otherwise zsh will pass the #tag to the command when you rerun it."
+fi

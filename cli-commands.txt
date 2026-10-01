@@ -1,0 +1,18 @@
+- fav
+sudo pmset disablesleep 1 # turns display sleep off
+sudo pmset disablesleep 0 # turns display sleep on
+open ~/.Trash
+
+- uni-2a
+uv run mlflow server --backend-store-uri sqlite:///mlflow.db --port 5001 # starts mlflow web ui
+
+- dot
+cd ~/.dotfiles
+
+- zsh
+open -a "Sublime Text" ~/.zshrc
+
+- git
+git quip "lazy-commit"
+git fetch && git status
+git log --oneline --graph --all
