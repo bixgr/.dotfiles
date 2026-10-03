@@ -2,7 +2,7 @@ local hyper = {"cmd", "alt", "ctrl", "shift"}
 
 require("window").apply(hyper)
 
--- reload on hyper + 0  (r is taken by restore)
+-- reload on hyper + 8
 hs.hotkey.bind(hyper, "8", hs.reload)
 
 -- auto-reload when the config changes
@@ -14,5 +14,9 @@ configWatcher = hs.pathwatcher.new(watchPath, function(files)
     if f:sub(-4) == ".lua" then hs.reload(); return end
   end
 end):start()
+
+-- these two lines load the scratchpad from scratchpad.lua
+local scratchpad = require("scratchpad")
+hs.hotkey.bind(hyper, "space", scratchpad.toggle)
 
 hs.alert.show("hammerspoon loaded")
