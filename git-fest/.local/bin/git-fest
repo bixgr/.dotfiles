@@ -1,0 +1,54 @@
+#!/usr/bin/env zsh
+# git fest  ->  fetch (pruning dead remote branches) + status,
+# plus a pre-flight check for `git quip`, which runs `git add -A`.
+
+emulate -L zsh
+
+git rev-parse --is-inside-work-tree &>/dev/null || {
+  print -u2 "fest: not inside a git repository"
+  exit 1
+}
+
+if git remote | grep -q .; then
+  git fetch --all --prune --quiet || print -u2 "fest: fetch failed, status may be stale"
+else
+  print "fest: no remotes, skipping fetch"
+fi
+
+git status
+print
+
+# --- pre-flight for quip -------------------------------------------------
+warn=0
+note() { print -P "%F{yellow}fest:%f $*"; warn=1 }
+
+if branch=$(git symbolic-ref --quiet --short HEAD); then
+  if git rev-parse '@{upstream}' &>/dev/null; then
+    read behind ahead < <(git rev-list --left-right --count '@{upstream}...HEAD')
+    if (( behind && ahead )); then
+      note "diverged from upstream ($ahead ahead, $behind behind) - pull --rebase before quip"
+    elif (( behind )); then
+      note "$behind commit(s) behind upstream - pull before quip or the push will fail"
+    fi
+  else
+    print "fest: '$branch' has no upstream - quip will set it to origin/$branch"
+  fi
+else
+  note "detached HEAD - quip won't push"
+fi
+
+# quip stages everything, so look at what's untracked
+untracked=("${(@f)$(git ls-files --others --exclude-standard)}")
+untracked=(${untracked:#})
+for f in $untracked; do
+  case ${f:t} in
+    .env|.env.*|*.pem|*.key|id_rsa*|id_ed25519*|*credentials*|*secret*|*.p12)
+      note "untracked file looks sensitive: $f" ;;
+  esac
+  [[ -f $f ]] && (( $(stat -f %z -- "$f") > 5 * 1024 * 1024 )) &&
+    note "untracked file is over 5 MB: $f"
+done
+(( ${#untracked} > 20 )) && note "${#untracked} untracked files - check nothing got dumped in by accident"
+
+(( warn )) || print -P "%F{green}fest:%f ready to quip"
+exit 0
