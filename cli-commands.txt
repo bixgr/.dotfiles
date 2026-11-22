@@ -13,6 +13,13 @@ cd ~/.dotfiles
 open -a "Sublime Text" ~/.zshrc
 
 - git
-git quip "lazy-commit"
+git quip "lazy-commit" # quick push ; adds whole repo, commits and pushes to remote
 git fetch && git status
 git log --oneline --graph --all
+
+- oz
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.bix.organize.plist # loads organize config and watches folders
+launchctl bootout gui/$(id -u)/com.bix.organize # unloads
+organize sim
+organize run
+open -a "Sublime Text" '/Users/bixgranvik/Library/Application Support/organize/config.yaml'
