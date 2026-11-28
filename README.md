@@ -16,3 +16,37 @@ yazi
 
 gitconfig
 	TODO : change to ssh key instead of https after doing ssh bandit (and learning)
+
+key binds for hyper
+q - shrinq window
+e - enlarge window
+w - window up
+s - window down
+a - window left
+d - window right
+r - restore window
+n - next display
+m - maximize window
+
+f - finder
+g - go to (file)
+t - terminal
+y - spotifY
+c - code
+v - vibe code
+b - browser
+p - photo editor
+å - åtodesk fusion
+ä - bämbu studio
+x - eXchange (discord, teams)
+‘ - dismiss notifications
+
+i - up
+j - left
+k - down
+l - left
+u - page Up
+o - page dOwn
+
+tab - ctrl + tab
+§ - ctrl + shift + tab
