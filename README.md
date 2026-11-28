@@ -38,7 +38,7 @@ b - browser
 p - photo editor
 å - åtodesk fusion
 ä - bämbu studio
-x - eXchange (discord, teams)
+h - “hello" (discord, teams)
 ‘ - dismiss notifications
 
 i - up
